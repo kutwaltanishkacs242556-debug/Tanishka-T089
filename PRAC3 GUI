@@ -1,0 +1,113 @@
+import tkinter as tk
+from tkinter import messagebox
+import hmac
+import hashlib
+
+# Secret Key
+SECRET_KEY = b"mysecretkey"
+
+# Generate MAC
+def generate_mac():
+    message = entry_message.get()
+
+    if message == "":
+        messagebox.showwarning("Warning", "Please enter a message!")
+        return
+
+    mac = hmac.new(SECRET_KEY, message.encode(), hashlib.sha256).hexdigest()
+
+    entry_mac.delete(0, tk.END)
+    entry_mac.insert(0, mac)
+
+# Verify MAC
+def verify_mac():
+    message = entry_verify_message.get()
+    received_mac = entry_verify_mac.get()
+
+    if message == "" or received_mac == "":
+        messagebox.showwarning("Warning", "Please enter message and MAC!")
+        return
+
+    new_mac = hmac.new(SECRET_KEY, message.encode(), hashlib.sha256).hexdigest()
+
+    if hmac.compare_digest(new_mac, received_mac):
+        lbl_result.config(
+            text="✓ MAC Verified\nMessage is Authentic",
+            fg="green"
+        )
+    else:
+        lbl_result.config(
+            text="✗ MAC Verification Failed\nMessage Modified",
+            fg="red"
+        )
+
+# ---------------- GUI ---------------- #
+
+root = tk.Tk()
+root.title("Message Authentication Code (MAC)")
+root.geometry("600x430")
+root.resizable(False, False)
+root.configure(bg="#E8F6F3")
+
+title = tk.Label(
+    root,
+    text="Message Authentication Code (HMAC-SHA256)",
+    font=("Arial", 16, "bold"),
+    bg="#E8F6F3",
+    fg="navy"
+)
+title.pack(pady=10)
+
+# Generate Section
+frame1 = tk.LabelFrame(root, text="Generate MAC", font=("Arial", 11, "bold"), bg="#E8F6F3")
+frame1.pack(fill="x", padx=15, pady=10)
+
+tk.Label(frame1, text="Message:", bg="#E8F6F3").grid(row=0, column=0, padx=10, pady=10)
+
+entry_message = tk.Entry(frame1, width=55)
+entry_message.grid(row=0, column=1, padx=10)
+
+tk.Button(
+    frame1,
+    text="Generate MAC",
+    bg="#3498DB",
+    fg="white",
+    command=generate_mac
+).grid(row=1, column=1, pady=10)
+
+tk.Label(frame1, text="Generated MAC:", bg="#E8F6F3").grid(row=2, column=0, padx=10, pady=10)
+
+entry_mac = tk.Entry(frame1, width=55)
+entry_mac.grid(row=2, column=1)
+
+# Verify Section
+frame2 = tk.LabelFrame(root, text="Verify MAC", font=("Arial", 11, "bold"), bg="#E8F6F3")
+frame2.pack(fill="x", padx=15, pady=10)
+
+tk.Label(frame2, text="Received Message:", bg="#E8F6F3").grid(row=0, column=0, padx=10, pady=8)
+
+entry_verify_message = tk.Entry(frame2, width=55)
+entry_verify_message.grid(row=0, column=1)
+
+tk.Label(frame2, text="Received MAC:", bg="#E8F6F3").grid(row=1, column=0, padx=10, pady=8)
+
+entry_verify_mac = tk.Entry(frame2, width=55)
+entry_verify_mac.grid(row=1, column=1)
+
+tk.Button(
+    frame2,
+    text="Verify MAC",
+    bg="#27AE60",
+    fg="white",
+    command=verify_mac
+).grid(row=2, column=1, pady=10)
+
+lbl_result = tk.Label(
+    root,
+    text="",
+    font=("Arial", 13, "bold"),
+    bg="#E8F6F3"
+)
+lbl_result.pack(pady=15)
+
+root.mainloop()
