@@ -1,0 +1,29 @@
+print("DIFFIE-HELLMAN KEY EXCHANGE")
+print("----------------------------")
+
+p = int(input("Enter prime number (p): "))
+g = int(input("Enter primitive root (g): "))
+
+a = int(input("Enter Tanu's private key: "))
+b = int(input("Enter Tanishka's private key: "))
+
+A = pow(g, a, p)
+
+B = pow(g, b, p)
+
+key_Tanu = pow(B, a, p)
+key_Tanishka = pow(A, b, p)
+
+print("\n--- RESULTS ---")
+
+print("Tanu's Public Key:", A)
+print("Tanishka's Public Key:", B)
+
+print("Tanu's Shared Secret Key:", key_Tanu)
+print("Tanishka's Shared Secret Key:", key_Tanishka)
+
+if key_Tanu == key_Tanishka:
+    print("\nKey Exchange Successful!")
+    print("Both Tanu and Tanishka have the same secret key.")
+else:
+    print("\nKey Exchange Failed!")
